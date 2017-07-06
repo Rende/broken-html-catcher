@@ -36,8 +36,8 @@ public class BrokenHtmlCatcher {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String inputFilePath = "/gfs/clueweb09/Disk1/ClueWeb09_German_1/";///Users/aydanrende/Documents/gfs/
-		listFilesForFolder(new File(inputFilePath));
+		String inputFilePath = "/Users/aydanrende/Documents/gfs/";//
+		listFilesForFolder(new File(inputFilePath));///gfs/clueweb09/Disk1/ClueWeb09_German_1/
 		HashSet<String> hashSet = getAlreadyProcessedFileSet();
 		for (int i = 0; i < fileList.size(); i++) {
 			if (!hashSet.contains(fileList.get(i))) {
@@ -97,14 +97,12 @@ public class BrokenHtmlCatcher {
 	}
 
 	public static HashSet<String> getAlreadyProcessedFileSet() {
-		String fileName = "already-processed.txt";
-
+//		ClassLoader classLoader = BrokenHtmlCatcher.class.getClassLoader();
+//		File fi = new File(classLoader.getResource("already-processed.txt").getFile());
 		HashSet<String> set = new HashSet<String>();
 		// read file into stream, try-with-resources
-		try (Stream<String> stream = Files.lines(Paths.get(fileName))) {
-
+		try (Stream<String> stream = Files.lines(Paths.get("already-processed.txt"))) {
 			set = (HashSet<String>) stream.collect(Collectors.toSet());
-
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
