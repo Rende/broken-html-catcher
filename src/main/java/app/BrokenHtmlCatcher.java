@@ -36,8 +36,8 @@ public class BrokenHtmlCatcher {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String inputFilePath = "/Users/aydanrende/Documents/gfs/";//
-		listFilesForFolder(new File(inputFilePath));///gfs/clueweb09/Disk1/ClueWeb09_German_1/
+		String inputFilePath = "/gfs/clueweb09/Disk1/ClueWeb09_German_1/";///Users/aydanrende/Documents/gfs/
+		listFilesForFolder(new File(inputFilePath));//
 		HashSet<String> hashSet = getAlreadyProcessedFileSet();
 		for (int i = 0; i < fileList.size(); i++) {
 			if (!hashSet.contains(fileList.get(i))) {
