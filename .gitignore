@@ -1,0 +1,8 @@
+/target/
+.class
+.log
+.out
+.DS_Store
+.warc
+.project
+.classpath
