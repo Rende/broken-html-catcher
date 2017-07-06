@@ -4,8 +4,13 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 
 import org.xml.sax.SAXException;
@@ -31,43 +36,50 @@ public class BrokenHtmlCatcher {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String inputFilePath = "/gfs/clueweb09/Disk1/ClueWeb09_German_1/";
+		String inputFilePath = "/gfs/clueweb09/Disk1/ClueWeb09_German_1/";///Users/aydanrende/Documents/gfs/
 		listFilesForFolder(new File(inputFilePath));
+		HashSet<String> hashSet = getAlreadyProcessedFileSet();
 		for (int i = 0; i < fileList.size(); i++) {
-			try {
-				GZIPInputStream gzInputStream;
-				System.out.println(fileList.get(i));
-				gzInputStream = new GZIPInputStream(new FileInputStream(
-						fileList.get(i)));
-				WarcRecord warcRecord;
-				DataInputStream inStream = new DataInputStream(gzInputStream);
-				while ((warcRecord = WarcRecord.readNextWarcRecord(inStream)) != null) {
-					try {
-						String htmlText = warcRecord.getContentUTF8();
-						HTMLDocument htmlDoc = new HTMLDocument(htmlText);
-						TextDocument doc = new BoilerpipeSAXInput(
-								htmlDoc.toInputSource()).getTextDocument();
-					} catch (StackOverflowError e) {
-						// TODO Auto-generated catch block
-						System.out
-								.println("Broken warc record id: "
-										+ warcRecord
-												.getHeaderMetadataItem("WARC-Record-ID"));
-						// e.printStackTrace();
+			if (!hashSet.contains(fileList.get(i))) {
+				try {
+					GZIPInputStream gzInputStream;
+					System.out.println(fileList.get(i));
+					gzInputStream = new GZIPInputStream(new FileInputStream(
+							fileList.get(i)));
+					WarcRecord warcRecord;
+					DataInputStream inStream = new DataInputStream(
+							gzInputStream);
+					while ((warcRecord = WarcRecord
+							.readNextWarcRecord(inStream)) != null) {
+						try {
+							String htmlText = warcRecord.getContentUTF8();
+							HTMLDocument htmlDoc = new HTMLDocument(htmlText);
+							TextDocument doc = new BoilerpipeSAXInput(
+									htmlDoc.toInputSource()).getTextDocument();
+						} catch (StackOverflowError e) {
+							// TODO Auto-generated catch block
+							System.out
+									.println("Broken warc record id: "
+											+ warcRecord
+													.getHeaderMetadataItem("WARC-Record-ID"));
+							// e.printStackTrace();
 
+						}
 					}
-				}
-				inStream.close();
+					inStream.close();
 
-			} catch (BoilerpipeProcessingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (SAXException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				} catch (BoilerpipeProcessingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SAXException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -82,5 +94,20 @@ public class BrokenHtmlCatcher {
 				}
 			}
 		}
+	}
+
+	public static HashSet<String> getAlreadyProcessedFileSet() {
+		String fileName = "already-processed.txt";
+
+		HashSet<String> set = new HashSet<String>();
+		// read file into stream, try-with-resources
+		try (Stream<String> stream = Files.lines(Paths.get(fileName))) {
+
+			set = (HashSet<String>) stream.collect(Collectors.toSet());
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return set;
 	}
 }
