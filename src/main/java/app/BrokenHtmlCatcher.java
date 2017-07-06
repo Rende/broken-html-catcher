@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -97,11 +96,11 @@ public class BrokenHtmlCatcher {
 	}
 
 	public static HashSet<String> getAlreadyProcessedFileSet() {
-//		ClassLoader classLoader = BrokenHtmlCatcher.class.getClassLoader();
-//		File fi = new File(classLoader.getResource("already-processed.txt").getFile());
+		ClassLoader classLoader = BrokenHtmlCatcher.class.getClassLoader();
+		File fi = new File(classLoader.getResource("already-processed.txt").getFile());
 		HashSet<String> set = new HashSet<String>();
 		// read file into stream, try-with-resources
-		try (Stream<String> stream = Files.lines(Paths.get("already-processed.txt"))) {
+		try (Stream<String> stream = Files.lines(fi.toPath())) {
 			set = (HashSet<String>) stream.collect(Collectors.toSet());
 		} catch (IOException e) {
 			e.printStackTrace();
